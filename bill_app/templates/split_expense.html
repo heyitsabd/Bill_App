@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Split Expense</title>
+    <script>
+        function handleSplitTypeChange() {
+            const splitType = document.getElementById('id_split_type').value;
+            const exactAmountsDiv = document.getElementById('exact-amounts');
+            const percentagesDiv = document.getElementById('percentages');
+            
+            if (splitType === 'exact') {
+                exactAmountsDiv.style.display = 'block';
+                percentagesDiv.style.display = 'none';
+            } else if (splitType === 'percentage') {
+                exactAmountsDiv.style.display = 'none';
+                percentagesDiv.style.display = 'block';
+            } else {
+                exactAmountsDiv.style.display = 'none';
+                percentagesDiv.style.display = 'none';
+            }
+        }
+
+        function updateFields() {
+            const selectedUsers = Array.from(document.querySelectorAll('input[name="users"]:checked'));
+            const userIds = selectedUsers.map(user => user.value);
+            
+            const exactAmountsDiv = document.getElementById('exact-amounts');
+            const percentagesDiv = document.getElementById('percentages');
+            
+            const exactInputs = exactAmountsDiv.querySelectorAll('div.user-amount');
+            const percentageInputs = percentagesDiv.querySelectorAll('div.user-percentage');
+            
+            // Hide all fields
+            exactInputs.forEach(input => input.style.display = 'none');
+            percentageInputs.forEach(input => input.style.display = 'none');
+            
+            // Show fields for selected users
+            userIds.forEach(userId => {
+                document.getElementById(`exact_amounts_${userId}`).style.display = 'block';
+                document.getElementById(`percentages_${userId}`).style.display = 'block';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            handleSplitTypeChange();
+            document.querySelectorAll('input[name="users"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updateFields);
+            });
+            document.getElementById('id_split_type').addEventListener('change', handleSplitTypeChange);
+        });
+    </script>
+</head>
+<body>
+    <h1>Split Expense</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Render form fields -->
+        {{ form.as_p }}
+
+        <!-- User selection -->
+        <div id="user-select">
+            <label>Select users:</label>
+            <div>
+                {% for user in users %}
+                    <div>
+                        <input type="checkbox" name="users" id="user_{{ user.id }}" value="{{ user.id }}">
+                        <label for="user_{{ user.id }}">{{ user.name }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Exact amounts section -->
+        <div id="exact-amounts" style="display:none;">
+            <label>Enter exact amounts:</label>
+            {% for user in users %}
+                <div class="user-amount" id="exact_amounts_{{ user.id }}" style="display:none;">
+                    <label for="exact_amounts_{{ user.id }}">{{ user.name }}:</label>
+                    <input type="text" name="exact_amounts_{{ user.id }}" id="exact_amounts_{{ user.id }}">
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Percentages section -->
+        <div id="percentages" style="display:none;">
+            <label>Enter percentages:</label>
+            {% for user in users %}
+                <div class="user-percentage" id="percentages_{{ user.id }}" style="display:none;">
+                    <label for="percentages_{{ user.id }}">{{ user.name }}:</label>
+                    <input type="text" name="percentages_{{ user.id }}" id="percentages_{{ user.id }}">
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
