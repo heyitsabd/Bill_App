@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Summary</title>
+</head>
+<body>
+    <h1>Expense Summary</h1>
+    <p>Total Amount: {{ total_amount }}</p>
+    <p>Split Type: {{ split_type }}</p>
+    <ul>
+        {% for user, amount in contributions %}
+            <li>{{ user }}: {{ amount }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'split_expense' %}">Back to Split Expense</a>
+</body>
+</html>

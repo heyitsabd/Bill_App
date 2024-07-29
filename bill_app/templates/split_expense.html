@@ -53,49 +53,53 @@
     </script>
 </head>
 <body>
-    <h1>Split Expense</h1>
-    <form method="post">
-        {% csrf_token %}
-        
-        <!-- Render form fields -->
-        {{ form.as_p }}
+    {% if user.is_authenticated %}
+        <h1>Split Expense</h1>
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Render form fields -->
+            {{ form.as_p }}
 
-        <!-- User selection -->
-        <div id="user-select">
-            <label>Select users:</label>
-            <div>
+            <!-- User selection -->
+            <div id="user-select">
+                <label>Select users:</label>
+                <div>
+                    {% for user in users %}
+                        <div>
+                            <input type="checkbox" name="users" id="user_{{ user.id }}" value="{{ user.id }}">
+                            <label for="user_{{ user.id }}">{{ user.name }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Exact amounts section -->
+            <div id="exact-amounts" style="display:none;">
+                <label>Enter exact amounts:</label>
                 {% for user in users %}
-                    <div>
-                        <input type="checkbox" name="users" id="user_{{ user.id }}" value="{{ user.id }}">
-                        <label for="user_{{ user.id }}">{{ user.name }}</label>
+                    <div class="user-amount" id="exact_amounts_{{ user.id }}" style="display:none;">
+                        <label for="exact_amounts_{{ user.id }}">{{ user.name }}:</label>
+                        <input type="text" name="exact_amounts_{{ user.id }}" id="exact_amounts_{{ user.id }}">
                     </div>
                 {% endfor %}
             </div>
-        </div>
-        
-        <!-- Exact amounts section -->
-        <div id="exact-amounts" style="display:none;">
-            <label>Enter exact amounts:</label>
-            {% for user in users %}
-                <div class="user-amount" id="exact_amounts_{{ user.id }}" style="display:none;">
-                    <label for="exact_amounts_{{ user.id }}">{{ user.name }}:</label>
-                    <input type="text" name="exact_amounts_{{ user.id }}" id="exact_amounts_{{ user.id }}">
-                </div>
-            {% endfor %}
-        </div>
 
-        <!-- Percentages section -->
-        <div id="percentages" style="display:none;">
-            <label>Enter percentages:</label>
-            {% for user in users %}
-                <div class="user-percentage" id="percentages_{{ user.id }}" style="display:none;">
-                    <label for="percentages_{{ user.id }}">{{ user.name }}:</label>
-                    <input type="text" name="percentages_{{ user.id }}" id="percentages_{{ user.id }}">
-                </div>
-            {% endfor %}
-        </div>
+            <!-- Percentages section -->
+            <div id="percentages" style="display:none;">
+                <label>Enter percentages:</label>
+                {% for user in users %}
+                    <div class="user-percentage" id="percentages_{{ user.id }}" style="display:none;">
+                        <label for="percentages_{{ user.id }}">{{ user.name }}:</label>
+                        <input type="text" name="percentages_{{ user.id }}" id="percentages_{{ user.id }}">
+                    </div>
+                {% endfor %}
+            </div>
 
-        <button type="submit">Submit</button>
-    </form>
+            <button type="submit">Submit</button>
+        </form>
+    {% else %}
+        <p>Please log in to access this page.</p>
+    {% endif %}
 </body>
 </html>
